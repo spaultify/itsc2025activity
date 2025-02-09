@@ -133,7 +133,7 @@ def superstore_activity_dataset() -> pd.DataFrame:
 
     # malformed segment
     malformed_segment = [4504, 4504, 4607, 4628, 4633, 4726, 4818, 4894, 4915, 4943]
-    for row_id in malformed_country:
+    for row_id in malformed_segment:
         df.loc[df["Row ID"] == row_id, "Segment"] = df.loc[
             df["Row ID"] == row_id, "Segment"
         ].apply(scramble_case)
