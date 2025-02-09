@@ -25,37 +25,41 @@ def scramble_case(text):
     return "".join(random.choice([char.upper(), char.lower()]) for char in text)
 
 
+dtypes = {
+    "Row ID": int,
+    "Validity": str,
+    "Order ID": str,
+    "Shipping Placement Duration": object,
+    "Ship Mode": str,
+    "Customer ID": str,
+    "Customer Name": str,
+    "Segment": str,
+    "Country/Region": str,
+    "City": str,
+    "State/Province": str,
+    "Postal Code": str,
+    "Region": str,
+    "Product ID": str,
+    "Category": str,
+    "Sub-Category": str,
+    "Product Name": str,
+    "Sales": float,
+    "Quantity": int,
+    "Discount": float,
+    "Profit": float,
+    "Loss/Profit?": str,
+}
+
+
 @dg.asset(group_name="ingestion")
 def superstore_raw() -> dg.MaterializeResult:
-
-    dtypes = {
-        "Row ID": int,
-        "Order ID": str,
-        "Shipping Placement Duration": int,
-        "Ship Mode": str,
-        "Customer ID": str,
-        "Customer Name": str,
-        "Segment": str,
-        "Country/Region": str,
-        "City": str,
-        "State/Province": str,
-        "Postal Code": str,
-        "Region": str,
-        "Product ID": str,
-        "Category": str,
-        "Sub-Category": str,
-        "Product Name": str,
-        "Sales": float,
-        "Quantity": int,
-        "Discount": float,
-        "Profit": float,
-        "Loss/Profit?": str,
-    }
 
     date_cols = ["Order Date", "Ship Date"]
 
     df = pd.read_csv(
-        filepath_or_buffer=SUPERSTORE_FILEPATH, dtype=dtypes, parse_dates=date_cols
+        filepath_or_buffer=SUPERSTORE_FILEPATH,
+        dtype=dtypes,
+        parse_dates=date_cols,
     )
 
     row_count = df.shape[0]
@@ -72,30 +76,6 @@ def superstore_raw() -> dg.MaterializeResult:
 
 @dg.asset(group_name="transform", deps=[superstore_raw])
 def superstore_activity_dataset() -> pd.DataFrame:
-
-    dtypes = {
-        "Row ID": int,
-        "Order ID": str,
-        "Shipping Placement Duration": int,
-        "Ship Mode": str,
-        "Customer ID": str,
-        "Customer Name": str,
-        "Segment": str,
-        "Country/Region": str,
-        "City": str,
-        "State/Province": str,
-        "Postal Code": str,
-        "Region": str,
-        "Product ID": str,
-        "Category": str,
-        "Sub-Category": str,
-        "Product Name": str,
-        "Sales": float,
-        "Quantity": int,
-        "Discount": float,
-        "Profit": float,
-        "Loss/Profit?": str,
-    }
 
     date_cols = ["Order Date", "Ship Date"]
 
@@ -199,7 +179,7 @@ def superstore_activity_dataset() -> pd.DataFrame:
     # sales is outlier
     outlier_sales = [7514, 7545, 7767, 7922, 8072, 8075, 8187, 8242, 8283, 8389]
     for row_id in outlier_sales:
-        random_multiplier = random.choice([1000, -1000, 500, -500])
+        random_multiplier = random.choice([10000, -10000, 50000, -50000])
         print(random_multiplier)
         df.loc[df["Row ID"] == row_id, "Sales"] = df.loc[
             df["Row ID"] == row_id, "Sales"
